@@ -1,7 +1,6 @@
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 /**
  * Order class that will contain the information for fulfilling an order.
  * Contains the nested class for Tool.
@@ -67,7 +66,8 @@ public class Order
 	 */
 	void checkout()
 	{
-		int days = getChargeableDays();
+		int days = getChargeableDays(); // get days we charge
+		// math for the different costs
 		double initialCost = days * orderTool.toolDailyCharge;
 		double discountAmount = (initialCost*discount)/100;
 		double finalCost = initialCost - discountAmount;
@@ -97,28 +97,35 @@ public class Order
 	int getChargeableDays()
 	{
 		int chargeableDays = 0;
+		// want to track the amount of each day we charge for total chargeable days
 		int weekdays = 0, holidays = 0, weekendDays = 0;
+		// make a start and end date
 		LocalDate startDate = LocalDate.parse(checkoutDate);
 		LocalDate endDate = startDate.plusDays(rentalDayCount);
+		// go ahead and save this for the printout
 		returnDate = endDate.toString();
 		
-		LocalDate tempDate = startDate;
+		LocalDate tempDate = startDate; // temporary date for iterating
 		while (tempDate.compareTo(endDate) < 0)
 		{
+			// check for a weekend day
 			if (tempDate.getDayOfWeek() == DayOfWeek.SATURDAY ||
 					tempDate.getDayOfWeek() == DayOfWeek.SUNDAY)
 			{
+				// if the tool is chargeable on the weekend increment weekend counter
 				if (orderTool.weekend)
 				{
 					weekendDays++;
 				}
+				// check for the fourth if it's on a weekend
 				if (checkForIndependenceDay(tempDate))
 				{
 					/*
 					 * if the fourth is on a weekend, we take away a charged weekday
 					 * and add the holiday.
 					 */
-					weekdays--;
+					weekdays--; // the fourth takes place of a weekday so decrement
+					// if the tool charges holidays increment the holiday count
 					if (orderTool.holiday)
 					{
 						holidays++;
@@ -127,14 +134,18 @@ public class Order
 			}
 			else
 			{
+				// if not a weekend and tool charges weekdays increment weekday count
 				if (orderTool.weekday)
 				{
 					weekdays++;	
 				}
+				// get the day of week and check for labor day
 				DayOfWeek day = tempDate.getDayOfWeek();
 				if (checkForLaborDay(tempDate, day))
 				{
+					// if it's labor day decrement the weekday count since a holiday takes place
 					weekdays--;
+					// if the tool charges holidays increment holiday count
 					if (orderTool.holiday)
 					{
 						holidays++;
@@ -150,10 +161,15 @@ public class Order
 		if (holidays < 0) { holidays = 0; }
 		if (weekendDays < 0) { weekendDays = 0; }
 		
-		chargeableDays = weekdays + holidays + weekendDays;
+		chargeableDays = weekdays + holidays + weekendDays; // add up to get final amount of chargeable days
 		return chargeableDays;
 	}
 	
+	/**
+	 * Check for if the date is independence day.
+	 * @param theDate [in] the date to check
+	 * @return true if independence day false if not
+	 */
 	boolean checkForIndependenceDay(LocalDate theDate)
 	{
 		boolean isIndependenceDay = false;
@@ -166,6 +182,12 @@ public class Order
 		return isIndependenceDay;
 	}
 	
+	/**
+	 * Check for labor day
+	 * @param theDate [in] the date to check
+	 * @param day [in] the day of the week
+	 * @return true if labor day false if not
+	 */
 	boolean checkForLaborDay(LocalDate theDate, DayOfWeek day)
 	{
 		boolean isLaborDay = false;
@@ -173,6 +195,7 @@ public class Order
 		// if it is the first monday of the month of september it is labor day
 		if (theDate.getMonth() == Month.SEPTEMBER)
 		{
+			// if it's monday and occurs in the first 7 days of the month it's labor day
 			if (day == DayOfWeek.MONDAY && (theDate.getDayOfMonth() < 8))
 			{
 				isLaborDay = true;
@@ -310,6 +333,10 @@ public class Order
 			}
 		}
 		
+		/**
+		 * Converts the tool type enum into a string for printing
+		 * @return
+		 */
 		String toolTypeToString()
 		{
 			String strType = "";

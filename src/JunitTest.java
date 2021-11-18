@@ -1,5 +1,10 @@
 import org.junit.Test;
 
+/**
+ * class for unit testing. tests the 6 cases provided for me to test.
+ * @author ryanthornton
+ *
+ */
 public class JunitTest 
 {
 	@Test
