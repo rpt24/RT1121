@@ -1,6 +1,7 @@
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 /**
  * Order class that will contain the information for fulfilling an order.
  * Contains the nested class for Tool.
@@ -25,7 +26,9 @@ public class Order
 			ToolType.JACKHAMMER, ToolType.JACKHAMMER};
 	
 	int discount, rentalDayCount; // class variables for discount and rental day amount
-	String date; // the starting date of the order
+	String checkoutDate; // the starting date of the order
+	String returnDate; // string of date to return
+	
 	
 	
 	// An object of Tool will be a part of each order
@@ -55,8 +58,7 @@ public class Order
 		// checks the tool code for validity then sets a key for use with other arrays.
 		int key = checkToolCode(inputCode);
 		orderTool = new Tool(inputCode, brand[key], types[key]);
-		
-		date = startDate;
+		checkoutDate = startDate;
 	}
 	
 	/**
@@ -67,15 +69,24 @@ public class Order
 	{
 		int days = getChargeableDays();
 		double initialCost = days * orderTool.toolDailyCharge;
-		double discountAmount = initialCost * (discount/100);
+		double discountAmount = (initialCost*discount)/100;
 		double finalCost = initialCost - discountAmount;
 		
 		// print the information
+		System.out.println("###################################");
 		System.out.format("Tool Code: %s\n", orderTool.toolCode);
 		System.out.format("Tool Type: %s\n", orderTool.toolTypeToString());
 		System.out.format("Tool Brand: %s\n", orderTool.toolBrand);
-		
+		System.out.format("Rental Days: %d\n", rentalDayCount);
+		System.out.format("Check out Date: %s\n", checkoutDate);
+		System.out.format("Due Date: %s\n", returnDate);
+		System.out.format("Daily Rental Charge: %.2f\n", orderTool.toolDailyCharge);
+		System.out.format("Charge Days: %d\n", days);
+		System.out.format("Pre-discount Charge: %.2f\n", initialCost);
+		System.out.format("Discount Percent: %d\n", discount);
+		System.out.format("Discount Amount: %.2f\n", discountAmount);
 		System.out.format("Final Charge: $%.2f\n", finalCost);
+		System.out.println("###################################\n\n");
 		
 	}
 	
@@ -87,8 +98,9 @@ public class Order
 	{
 		int chargeableDays = 0;
 		int weekdays = 0, holidays = 0, weekendDays = 0;
-		LocalDate startDate = LocalDate.parse(date);
+		LocalDate startDate = LocalDate.parse(checkoutDate);
 		LocalDate endDate = startDate.plusDays(rentalDayCount);
+		returnDate = endDate.toString();
 		
 		LocalDate tempDate = startDate;
 		while (tempDate.compareTo(endDate) < 0)
@@ -129,7 +141,6 @@ public class Order
 					}
 				}
 			}
-			
 			tempDate = tempDate.plusDays(1); // add a day to iterate
 		}
 		

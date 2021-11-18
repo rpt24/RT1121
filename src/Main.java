@@ -1,13 +1,18 @@
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
 public class Main 
 {
 	public static void main(String args[]) throws CustomException
 	{
-		int rentday = 5;
-		int discount = 10;
-		Order myOrder = new Order("CHNS", discount, rentday, "2015-07-02");
-		myOrder.checkout();
+		Result result = JUnitCore.runClasses(JunitTest.class);
 		
-		// todo - add discount and junit
+		for (Failure failure : result.getFailures())
+		{
+			System.out.println(failure.toString());
+		}
+		
+		System.out.println(result.wasSuccessful());
 	}
 }
