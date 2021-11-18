@@ -1,6 +1,7 @@
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 /**
  * Order class that will contain the information for fulfilling an order.
  * Contains the nested class for Tool.
@@ -80,11 +81,11 @@ public class Order
 		System.out.format("Rental Days: %d\n", rentalDayCount);
 		System.out.format("Check out Date: %s\n", checkoutDate);
 		System.out.format("Due Date: %s\n", returnDate);
-		System.out.format("Daily Rental Charge: %.2f\n", orderTool.toolDailyCharge);
+		System.out.format("Daily Rental Charge: $%.2f\n", orderTool.toolDailyCharge);
 		System.out.format("Charge Days: %d\n", days);
-		System.out.format("Pre-discount Charge: %.2f\n", initialCost);
+		System.out.format("Pre-discount Charge: $%.2f\n", initialCost);
 		System.out.format("Discount Percent: %d\n", discount);
-		System.out.format("Discount Amount: %.2f\n", discountAmount);
+		System.out.format("Discount Amount: $%.2f\n", discountAmount);
 		System.out.format("Final Charge: $%.2f\n", finalCost);
 		System.out.println("###################################\n\n");
 		
@@ -102,11 +103,14 @@ public class Order
 		// make a start and end date
 		LocalDate startDate = LocalDate.parse(checkoutDate);
 		LocalDate endDate = startDate.plusDays(rentalDayCount);
-		// go ahead and save this for the printout
-		returnDate = endDate.toString();
 		
-		LocalDate tempDate = startDate; // temporary date for iterating
-		while (tempDate.compareTo(endDate) < 0)
+		// go ahead and save these for the printout
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/YY");
+		returnDate = formatter.format(endDate);
+		checkoutDate = formatter.format(startDate);
+		
+		LocalDate tempDate = startDate.plusDays(1); // temporary date for iterating that is the day after checkout
+		while (tempDate.compareTo(endDate.plusDays(1)) < 0)
 		{
 			// check for a weekend day
 			if (tempDate.getDayOfWeek() == DayOfWeek.SATURDAY ||
